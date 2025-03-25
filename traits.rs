@@ -1,6 +1,6 @@
 use ink::{
+    H160,
     prelude::{string::String, vec::Vec},
-    primitives::AccountId,
 };
 
 use crate::errors::PSP22Error;
@@ -15,13 +15,13 @@ pub trait PSP22 {
     ///
     /// Returns `0` if the account is non-existent.
     #[ink(message)]
-    fn balance_of(&self, owner: AccountId) -> u128;
+    fn balance_of(&self, owner: H160) -> u128;
 
     /// Returns the amount which `spender` is still allowed to withdraw from `owner`.
     ///
     /// Returns `0` if no allowance has been set.
     #[ink(message)]
-    fn allowance(&self, owner: AccountId, spender: AccountId) -> u128;
+    fn allowance(&self, owner: H160, spender: H160) -> u128;
 
     /// Transfers `value` amount of tokens from the caller's account to account `to`
     /// with additional `data` in unspecified format.
@@ -37,7 +37,7 @@ pub trait PSP22 {
     ///
     /// Reverts with `InsufficientBalance` if the `value` exceeds the caller's balance.
     #[ink(message)]
-    fn transfer(&mut self, to: AccountId, value: u128, data: Vec<u8>) -> Result<(), PSP22Error>;
+    fn transfer(&mut self, to: H160, value: u128, data: Vec<u8>) -> Result<(), PSP22Error>;
 
     /// Transfers `value` tokens on the behalf of `from` to the account `to`
     /// with additional `data` in unspecified format.
@@ -68,8 +68,8 @@ pub trait PSP22 {
     #[ink(message)]
     fn transfer_from(
         &mut self,
-        from: AccountId,
-        to: AccountId,
+        from: H160,
+        to: H160,
         value: u128,
         data: Vec<u8>,
     ) -> Result<(), PSP22Error>;
@@ -85,7 +85,7 @@ pub trait PSP22 {
     ///
     /// No-op if the caller and `spender` is the same address, returns success and no events are emitted.
     #[ink(message)]
-    fn approve(&mut self, spender: AccountId, value: u128) -> Result<(), PSP22Error>;
+    fn approve(&mut self, spender: H160, value: u128) -> Result<(), PSP22Error>;
 
     /// Increases by `delta-value` the allowance granted to `spender` by the caller.
     ///
@@ -98,7 +98,7 @@ pub trait PSP22 {
     #[ink(message)]
     fn increase_allowance(
         &mut self,
-        spender: AccountId,
+        spender: H160,
         delta_value: u128,
     ) -> Result<(), PSP22Error>;
 
@@ -118,7 +118,7 @@ pub trait PSP22 {
     #[ink(message)]
     fn decrease_allowance(
         &mut self,
-        spender: AccountId,
+        spender: H160,
         delta_value: u128,
     ) -> Result<(), PSP22Error>;
 }

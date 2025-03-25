@@ -11,7 +11,6 @@ macro_rules! tests {
             use super::*;
             use ink::env::test::*;
             use ink::env::DefaultEnvironment as E;
-            use ink::primitives::AccountId;
             use $crate::{Approval, PSP22Error, Transfer, PSP22};
 
             // Gathers all emitted events, skip `shift` first, and return as a vector.
@@ -27,8 +26,8 @@ macro_rules! tests {
             // Asserts if the given event is a Transfer with particular from_, to_ and value_
             fn assert_transfer(
                 event: &EmittedEvent,
-                from: Option<AccountId>,
-                to: Option<AccountId>,
+                from: Option<H160>,
+                to: Option<H160>,
                 value: u128,
             ) {
                 let e = <Transfer as ink::scale::Decode>::decode(&mut &event.data[..])
@@ -39,12 +38,7 @@ macro_rules! tests {
             }
 
             // Asserts if the given event is a Approval with particular owner_, spender_ and amount_
-            fn assert_approval(
-                event: &EmittedEvent,
-                owner: AccountId,
-                spender: AccountId,
-                amount: u128,
-            ) {
+            fn assert_approval(event: &EmittedEvent, owner: H160, spender: H160, amount: u128) {
                 let e = <Approval as ink::scale::Decode>::decode(&mut &event.data[..])
                     .expect("Event is not Approval");
                 assert_eq!(e.owner, owner, "Approval event: 'owner' mismatch");

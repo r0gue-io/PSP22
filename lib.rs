@@ -25,7 +25,10 @@ pub use traits::{PSP22Burnable, PSP22Metadata, PSP22Mintable, PSP22};
 #[ink::contract]
 mod token {
     use crate::{PSP22Data, PSP22Error, PSP22Event, PSP22Metadata, PSP22};
-    use ink::prelude::{string::String, vec::Vec};
+    use ink::{
+        prelude::{string::String, vec::Vec},
+        H160,
+    };
 
     #[ink(storage)]
     pub struct Token {
@@ -74,22 +77,17 @@ mod token {
         }
 
         #[ink(message)]
-        fn balance_of(&self, owner: AccountId) -> u128 {
+        fn balance_of(&self, owner: H160) -> u128 {
             self.data.balance_of(owner)
         }
 
         #[ink(message)]
-        fn allowance(&self, owner: AccountId, spender: AccountId) -> u128 {
+        fn allowance(&self, owner: H160, spender: H160) -> u128 {
             self.data.allowance(owner, spender)
         }
 
         #[ink(message)]
-        fn transfer(
-            &mut self,
-            to: AccountId,
-            value: u128,
-            _data: Vec<u8>,
-        ) -> Result<(), PSP22Error> {
+        fn transfer(&mut self, to: H160, value: u128, _data: Vec<u8>) -> Result<(), PSP22Error> {
             let events = self.data.transfer(self.env().caller(), to, value)?;
             self.emit_events(events);
             Ok(())
@@ -98,8 +96,8 @@ mod token {
         #[ink(message)]
         fn transfer_from(
             &mut self,
-            from: AccountId,
-            to: AccountId,
+            from: H160,
+            to: H160,
             value: u128,
             _data: Vec<u8>,
         ) -> Result<(), PSP22Error> {
@@ -111,7 +109,7 @@ mod token {
         }
 
         #[ink(message)]
-        fn approve(&mut self, spender: AccountId, value: u128) -> Result<(), PSP22Error> {
+        fn approve(&mut self, spender: H160, value: u128) -> Result<(), PSP22Error> {
             let events = self.data.approve(self.env().caller(), spender, value)?;
             self.emit_events(events);
             Ok(())
@@ -120,7 +118,7 @@ mod token {
         #[ink(message)]
         fn increase_allowance(
             &mut self,
-            spender: AccountId,
+            spender: H160,
             delta_value: u128,
         ) -> Result<(), PSP22Error> {
             let events = self
@@ -133,7 +131,7 @@ mod token {
         #[ink(message)]
         fn decrease_allowance(
             &mut self,
-            spender: AccountId,
+            spender: H160,
             delta_value: u128,
         ) -> Result<(), PSP22Error> {
             let events = self

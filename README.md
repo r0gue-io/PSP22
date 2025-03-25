@@ -1,17 +1,17 @@
 # PSP22 Fungible Token
 
-PSP22 is a fungible token standard for WebAssembly smart contracts running on blockchains based on the [Substrate][substrate] framework. It is an equivalent of Ethereum's [ERC-20][erc20]. The definition of the PSP22 standard can be found [here][psp22].
+PSP22 is a fungible token standard for RISCV smart contracts running on blockchains based on the [Substrate][substrate] framework. It is an equivalent of Ethereum's [ERC-20][erc20]. The definition of the PSP22 standard can be found [here][psp22].
 
 This repository contains a simple, minimal implementation of the PSP22 token in [ink!][ink] smart contract programming language (EDSL based on Rust).
 
 ## How to use this repository
 
 > [!IMPORTANT]
-> **This version of the psp22 crate is compatible with ink! 5. For ink! 4 compatibility, please use 1.x.x version.**
+> **This version of the psp22 crate is compatible with ink! 6. For ink! 5 compatibility, please use 2.x.x version.**
 
 To use this crate as a dependency please add the following lines in your project's `Cargo.toml`:
 ```TOML
-psp22 = { version = "2.0", default-features = false, features = ["ink-as-dependency"] }
+psp22 = { version = "3.0", default-features = false, features = ["ink-as-dependency"] }
 # ...
 [features]
 # ...

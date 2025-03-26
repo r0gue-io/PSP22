@@ -3,8 +3,8 @@ use crate::events::{Approval, Transfer};
 use ink::prelude::string::String;
 use ink::{
     prelude::{vec, vec::Vec},
-    primitives::AccountId,
     storage::Mapping,
+    H160,
 };
 
 /// Common wrapper type for events emitted during operations that change the
@@ -15,7 +15,7 @@ pub enum PSP22Event {
 }
 
 // Shortcut for Approval PSP22Event constructor.
-fn approval_event(owner: AccountId, spender: AccountId, amount: u128) -> PSP22Event {
+fn approval_event(owner: H160, spender: H160, amount: u128) -> PSP22Event {
     PSP22Event::Approval(Approval {
         owner,
         spender,
@@ -24,7 +24,7 @@ fn approval_event(owner: AccountId, spender: AccountId, amount: u128) -> PSP22Ev
 }
 
 // Shortcut for Transfer PSP22Event constructor.
-fn transfer_event(from: Option<AccountId>, to: Option<AccountId>, value: u128) -> PSP22Event {
+fn transfer_event(from: Option<H160>, to: Option<H160>, value: u128) -> PSP22Event {
     PSP22Event::Transfer(Transfer { from, to, value })
 }
 
@@ -44,13 +44,13 @@ fn transfer_event(from: Option<AccountId>, to: Option<AccountId>, value: u128) -
 #[derive(Debug, Default)]
 pub struct PSP22Data {
     total_supply: u128,
-    balances: Mapping<AccountId, u128>,
-    allowances: Mapping<(AccountId, AccountId), u128>,
+    balances: Mapping<H160, u128>,
+    allowances: Mapping<(H160, H160), u128>,
 }
 
 impl PSP22Data {
     /// Creates a token with `supply` balance, initially held by the `creator` account.
-    pub fn new(supply: u128, creator: AccountId) -> (PSP22Data, Vec<PSP22Event>) {
+    pub fn new(supply: u128, creator: H160) -> (PSP22Data, Vec<PSP22Event>) {
         let mut data: PSP22Data = Default::default();
         let events = data.mint(creator, supply).unwrap();
         (data, events)
@@ -60,19 +60,19 @@ impl PSP22Data {
         self.total_supply
     }
 
-    pub fn balance_of(&self, owner: AccountId) -> u128 {
+    pub fn balance_of(&self, owner: H160) -> u128 {
         self.balances.get(owner).unwrap_or_default()
     }
 
-    pub fn allowance(&self, owner: AccountId, spender: AccountId) -> u128 {
+    pub fn allowance(&self, owner: H160, spender: H160) -> u128 {
         self.allowances.get((owner, spender)).unwrap_or_default()
     }
 
     /// Transfers `value` tokens from `caller` to `to`.
     pub fn transfer(
         &mut self,
-        caller: AccountId,
-        to: AccountId,
+        caller: H160,
+        to: H160,
         value: u128,
     ) -> Result<Vec<PSP22Event>, PSP22Error> {
         if caller == to || value == 0 {
@@ -100,9 +100,9 @@ impl PSP22Data {
     /// granted be `from` to `caller.
     pub fn transfer_from(
         &mut self,
-        caller: AccountId,
-        from: AccountId,
-        to: AccountId,
+        caller: H160,
+        from: H160,
+        to: H160,
         value: u128,
     ) -> Result<Vec<PSP22Event>, PSP22Error> {
         if from == to || value == 0 {
@@ -148,8 +148,8 @@ impl PSP22Data {
     /// Overwrites the previously granted value.
     pub fn approve(
         &mut self,
-        owner: AccountId,
-        spender: AccountId,
+        owner: H160,
+        spender: H160,
         value: u128,
     ) -> Result<Vec<PSP22Event>, PSP22Error> {
         if owner == spender {
@@ -166,8 +166,8 @@ impl PSP22Data {
     /// Increases the allowance granted  by `owner` to `spender` by `delta_value`.
     pub fn increase_allowance(
         &mut self,
-        owner: AccountId,
-        spender: AccountId,
+        owner: H160,
+        spender: H160,
         delta_value: u128,
     ) -> Result<Vec<PSP22Event>, PSP22Error> {
         if owner == spender || delta_value == 0 {
@@ -182,8 +182,8 @@ impl PSP22Data {
     /// Decreases the allowance granted  by `owner` to `spender` by `delta_value`.
     pub fn decrease_allowance(
         &mut self,
-        owner: AccountId,
-        spender: AccountId,
+        owner: H160,
+        spender: H160,
         delta_value: u128,
     ) -> Result<Vec<PSP22Event>, PSP22Error> {
         if owner == spender || delta_value == 0 {
@@ -203,7 +203,7 @@ impl PSP22Data {
     }
 
     /// Mints a `value` of new tokens to `to` account.
-    pub fn mint(&mut self, to: AccountId, value: u128) -> Result<Vec<PSP22Event>, PSP22Error> {
+    pub fn mint(&mut self, to: H160, value: u128) -> Result<Vec<PSP22Event>, PSP22Error> {
         if value == 0 {
             return Ok(vec![]);
         }
@@ -220,7 +220,7 @@ impl PSP22Data {
     }
 
     /// Burns `value` tokens from `from` account.
-    pub fn burn(&mut self, from: AccountId, value: u128) -> Result<Vec<PSP22Event>, PSP22Error> {
+    pub fn burn(&mut self, from: H160, value: u128) -> Result<Vec<PSP22Event>, PSP22Error> {
         if value == 0 {
             return Ok(vec![]);
         }
